@@ -3,6 +3,7 @@
 	<name>GraphicEngineTest</name>
 	<comment></comment>
 	<projects>
+		<project>GraphicEngineBase</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
