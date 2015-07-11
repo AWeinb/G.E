@@ -8,54 +8,50 @@
 #ifndef FRAMEWORK_COMMON_SETTINGS_H_
 #define FRAMEWORK_COMMON_SETTINGS_H_
 
-#include <fruit/fruit.h>
 #include <string>
 #include <map>
 
-#include "framework/common/settingsLoader/SettingsLoader.h"
-#include "framework/common/settingsWriter/SettingsWriter.h"
+#include "SettingsCommon.h"
+#include "settingsLoader/SettingsLoader.h"
+#include "settingsWriter/SettingsWriter.h"
 
 namespace NSSettings {
 
-	struct SettingEntry {
+	struct SettingsEntry {
 
 			std::string CATEGORY;
 			std::string KEY;
 
-			SettingEntry(std::string category, std::string name) {
+			SettingsEntry(std::string category, std::string name) {
 				CATEGORY = category;
 				KEY = name;
-			}
-
-			~SettingEntry() {
-				CATEGORY = nullptr;
-				KEY = nullptr;
 			}
 	};
 
 	class Settings {
 
 		public:
-			Settings();
+			Settings(SettingsLoader& settingsLoader, SettingsWriter& settingsWriter);
 			virtual ~Settings();
 
 			virtual void load(std::string path);
 			virtual void store(std::string path);
 			virtual bool isLoadedSuccessfully();
 			virtual bool wasJustStoredSuccessfully();
+			virtual void clear();
 
-			virtual void set(SettingEntry setting, std::string value);
-			virtual std::string get(SettingEntry setting);
+			virtual void set(SettingsEntry& setting, std::string value);
+			virtual std::string get(SettingsEntry& setting);
 
 		private:
-			fruit::Injector<SettingsLoader>* loaderInjector;
-			fruit::Injector<SettingsWriter>* writerInjector;
-			SettingsLoader* settingsLoader;
-			SettingsWriter* settingsWriter;
-
-			std::map<std::string, std::map<std::string, std::string>>* settingsMap;
+			SettingsLoader& settingsLoader;
+			SettingsWriter& settingsWriter;
+			settingsMap settingsData;
 			bool isLoaded;
 			bool isStored;
+
+			void set(std::string category, std::string key, std::string value);
+			std::string get(std::string category, std::string key);
 	};
 
 } /* namespace NSSettings */

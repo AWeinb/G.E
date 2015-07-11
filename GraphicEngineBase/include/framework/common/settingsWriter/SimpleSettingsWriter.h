@@ -20,8 +20,21 @@ namespace NSSettings {
 			INJECT(SimpleSettingsWriter());
 			virtual ~SimpleSettingsWriter();
 
-			virtual bool write(std::map<std::string, std::map<std::string, std::string>>* settings, std::string path)
-			        override;
+			virtual void write(settingsMap& settingsData, std::string filepath) override;
+			virtual bool wasWritingSuccessful() override;
+
+		private:
+			const std::string CATEGORY_START = "[";
+			const std::string CATEGORY_END = "]";
+			const std::string ENTRY_DIVIDER = "=";
+
+			bool wasLastWriteSuccessful;
+
+			inline bool isFileOperationPossible(std::string& filepath);
+			std::string createSettingsString(settingsMap& settingsData);
+			inline std::string createCategoryEntry(std::string category);
+			inline std::string createDataEntry(std::string key, std::string value);
+			inline void writeSettingsToFile(std::string& filepath, std::string& settingsAsString);
 	};
 
 } /* namespace NSSettings */

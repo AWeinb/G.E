@@ -9,6 +9,9 @@
 #define FRAMEWORK_COMMON_SETTINGSLOADER_SETTINGSLOADER_H_
 
 #include <string>
+#include <map>
+
+#include "../SettingsCommon.h"
 
 namespace NSSettings {
 
@@ -19,7 +22,7 @@ namespace NSSettings {
 			virtual ~SettingsLoader() {
 			}
 
-			virtual void load(Settings*, std::string) = 0;
+			virtual void load(settingsMap&, std::string) = 0;
 			virtual bool wasLoadingSuccessful() = 0;
 	};
 

@@ -11,6 +11,8 @@
 #include <string>
 #include <map>
 
+#include "../SettingsCommon.h"
+
 namespace NSSettings {
 
 	class SettingsWriter {
@@ -19,7 +21,8 @@ namespace NSSettings {
 			virtual ~SettingsWriter() {
 			}
 
-			virtual bool write(std::map<std::string, std::map<std::string, std::string>>*, std::string) = 0;
+			virtual void write(settingsMap& d, std::string) = 0;
+			virtual bool wasWritingSuccessful() = 0;
 	};
 
 } /* namespace NSSettings */

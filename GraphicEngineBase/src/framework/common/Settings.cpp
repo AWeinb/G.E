@@ -7,50 +7,35 @@
 
 #include "framework/common/Settings.h"
 
-#include "../components.cpp"
-
 namespace NSSettings {
 
 	/*-------------------------------------------------------------*/
 	/* SETTING IDS                                                 */
 	/*_____________________________________________________________*/
 
-	auto TEST = SettingEntry("", "");
+	auto TEST = SettingsEntry("", "");
 
 	/*_____________________________________________________________*/
 
-	Settings::Settings() {
-		loaderInjector = new fruit::Injector<SettingsLoader>(NSComponents::getSettingsLoaderComponent());
-		settingsLoader = loaderInjector->get<SettingsLoader*>();
-		writerInjector = new fruit::Injector<SettingsWriter>(NSComponents::getSettingsWriterComponent());
-		settingsWriter = writerInjector->get<SettingsWriter*>();
-
-		settingsMap = new std::map<std::string, std::map<std::string, std::string>>();
+	Settings::Settings(SettingsLoader& settingsLoader, SettingsWriter& settingsWriter) :
+			settingsLoader(settingsLoader), settingsWriter(settingsWriter) {
+		settingsData = settingsMap();
 		isLoaded = false;
 		isStored = true;
 	}
 
 	Settings::~Settings() {
-		delete loaderInjector;
-		delete writerInjector;
-		settingsLoader = nullptr;
-		settingsWriter = nullptr;
-		for (auto& entry : *settingsMap) {
-			delete &entry.second;
-		}
-		delete settingsMap;
-		settingsMap = nullptr;
 	}
 
 	void Settings::load(std::string file) {
-		settingsLoader->load(this, file);
-		isLoaded = settingsLoader->wasLoadingSuccessful();
+		settingsLoader.load(settingsData, file);
+		isLoaded = settingsLoader.wasLoadingSuccessful();
 		isStored = !isLoaded;
 	}
 
 	void Settings::store(std::string file) {
-		settingsWriter->write(settingsMap, file);
-		isStored = false;
+		settingsWriter.write(settingsData, file);
+		isStored = settingsWriter.wasWritingSuccessful();
 	}
 
 	bool Settings::isLoadedSuccessfully() {
@@ -61,18 +46,31 @@ namespace NSSettings {
 		return isStored;
 	}
 
-	void Settings::set(SettingEntry setting, std::string value) {
-		auto category = setting.CATEGORY;
-		auto key = setting.KEY;
-		if (settingsMap->find(category) != settingsMap->end()) {
-			(*settingsMap)[category] = *(new std::map<std::string, std::string>());
-		}
-		(*settingsMap)[category][key] = value;
+	void Settings::clear() {
+		settingsData.clear();
 	}
-	std::string Settings::get(SettingEntry setting) {
+
+	void Settings::set(SettingsEntry& setting, std::string value) {
 		auto category = setting.CATEGORY;
 		auto key = setting.KEY;
-		return (*settingsMap)[category][key];
+		set(category, key, value);
+	}
+
+	std::string Settings::get(SettingsEntry& setting) {
+		auto category = setting.CATEGORY;
+		auto key = setting.KEY;
+		return get(category, key);
+	}
+
+	void Settings::set(std::string category, std::string key, std::string value) {
+		if (settingsData.find(category) == settingsData.end()) {
+			settingsData[category] = std::map<std::string, std::string>();
+		}
+		settingsData[category][key] = value;
+	}
+
+	std::string Settings::get(std::string category, std::string key) {
+		return settingsData[category][key];
 	}
 
 } /* namespace NSSettings */
