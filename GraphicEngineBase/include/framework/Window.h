@@ -12,6 +12,8 @@
 #include <tuple>
 #include <string>
 
+#include "Mainloop.h"
+
 namespace NSFramework {
 
 	typedef std::tuple<int, int> size;
@@ -30,6 +32,9 @@ namespace NSFramework {
 			}
 
 			virtual void create() = 0;
+			virtual void destroy() = 0;
+			virtual void startLooping() = 0;
+
 			virtual void setCreationHint(int hint, int value) = 0;
 
 			virtual void show() = 0;
@@ -49,9 +54,6 @@ namespace NSFramework {
 			virtual void setPosition(int x, int y) = 0;
 			virtual position getPosition() = 0;
 
-			virtual void setFramebufferSize(int width, int height) = 0;
-			virtual size getFramebufferSize() = 0;
-
 			virtual void setFullscreen(bool fullscreen) = 0;
 			virtual bool isFullscreen() = 0;
 
@@ -59,19 +61,17 @@ namespace NSFramework {
 			virtual bool isMinimized() = 0;
 
 			virtual void setTitle(std::string title) = 0;
-			virtual std::string getTitle() = 0;
 
-			virtual void setCloseRequested(bool closed) = 0;
+			virtual void setCloseRequested(bool close) = 0;
 			virtual bool isCloseRequested() = 0;
 
 			virtual void setSwapInterval(int interval) = 0;
-			virtual int getSwapInterval() = 0;
 			virtual void swapBuffers() = 0;
 
 			virtual bool isFocused() = 0;
 			virtual int getWindowAttribute(int id) = 0;
 
-			virtual void setCloseCallback(Callback callback) = 0;
+			virtual void setCloseCallback(Callback& callback) = 0;
 			virtual void setResizeCallback(Callback callback) = 0;
 			virtual void setFramebufferResizeCallback(Callback callback) = 0;
 			virtual void setPositionCallback(Callback callback) = 0;
